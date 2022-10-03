@@ -26,7 +26,8 @@
     "**/node_modules/**",
     "**/dist/**",
     "**/out/**",
-    "**/*.js"
+    "**/*.js",
+    "**/*.test.ts"
   ],
   "references": [],
   "watchOptions": {
