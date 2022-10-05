@@ -2,6 +2,8 @@ import * as forge from "node-forge";
 
 export const bytesToHex = forge.util.bytesToHex;
 export const hexToBytes = forge.util.hexToBytes;
+export const bufferToBytes = (b: Buffer) =>
+  forge.util.createBuffer(b.toString("binary"));
 
 export const generateRsaKeyPair = forge.pki.rsa.generateKeyPair;
 export const privateKeyFromPem = forge.pki.privateKeyFromPem;

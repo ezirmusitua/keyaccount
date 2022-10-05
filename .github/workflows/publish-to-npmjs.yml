@@ -16,8 +16,8 @@ jobs:
         with:
           node-version: 16
       - run: yarn install --frozen-lockfile --registry=https://registry.npmjs.org
-      - run: yarn build
       - run: yarn test
+      - run: yarn build
 
   publish-npm:
     needs: build

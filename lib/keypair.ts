@@ -4,7 +4,9 @@ import {
   bytesToHex,
   generateRsaKeyPair,
   hexToBytes,
+  privateKeyFromPem,
   privateKeyToPem,
+  publicKeyFromPem,
   publicKeyToPem,
 } from "./utils";
 
@@ -23,11 +25,30 @@ class KeyPair {
   }
 
   encrypt(plain: string) {
-    return bytesToHex(this.pub_key.encrypt(plain, ASYM_ENC_SCHEME));
+    return KeyPair.encrypt(plain, this.pub_key);
+  }
+
+  static encrypt(plain: string, pub_key: string | tRsaPubKey) {
+    if (typeof pub_key !== "string") {
+      return bytesToHex(pub_key.encrypt(plain, ASYM_ENC_SCHEME));
+    }
+    return bytesToHex(
+      publicKeyFromPem(pub_key).encrypt(plain, ASYM_ENC_SCHEME)
+    );
   }
 
   decrypt(cipher: string) {
-    return this.prv_key.decrypt(hexToBytes(cipher), ASYM_ENC_SCHEME);
+    return KeyPair.decrypt(cipher, this.prv_key);
+  }
+
+  static decrypt(cipher: string, prv_key: string | tRsaPrvKey) {
+    if (typeof prv_key !== "string") {
+      return prv_key.decrypt(hexToBytes(cipher), ASYM_ENC_SCHEME);
+    }
+    return privateKeyFromPem(prv_key).decrypt(
+      hexToBytes(cipher),
+      ASYM_ENC_SCHEME
+    );
   }
 
   static async generate(): Promise<KeyPair> {

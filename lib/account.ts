@@ -1,5 +1,5 @@
 import Encryption from "./encryption";
-import { iKeyStore } from "./interface";
+import { iKeyStore, tRsaPrvKey, tRsaPubKey } from "./interface";
 import KeyPair from "./keypair";
 import {
   bytesToHex,
@@ -44,6 +44,10 @@ class Account {
     this._keyPair = new KeyPair(public_key, private_key);
   }
 
+  pub_encrypt(plain: string) {
+    return this._keyPair.encrypt(plain);
+  }
+
   encrypt(data: string) {
     const enc = new Encryption();
     const { cipher, iv } = enc.encrypt(data);
@@ -55,8 +59,30 @@ class Account {
     };
   }
 
+  static encrypt(data: string, pub_key: string | tRsaPubKey) {
+    const enc = new Encryption();
+    const { cipher, iv } = enc.encrypt(data);
+    const encrypted_key = KeyPair.encrypt(enc.key, pub_key);
+    return {
+      cipher,
+      iv,
+      key: encrypted_key,
+    };
+  }
+
+  prv_decrypt(ciphertext: string) {
+    return this._keyPair.decrypt(ciphertext);
+  }
+
   decrypt({ cipher, iv, key }: any) {
     const _key = this._keyPair.decrypt(key);
+    const enc = new Encryption(_key);
+    const plain = enc.decrypt(cipher, iv);
+    return plain;
+  }
+
+  static decrypt({ cipher, iv, key }: any, prv_key: string | tRsaPrvKey) {
+    const _key = KeyPair.decrypt(key, prv_key);
     const enc = new Encryption(_key);
     const plain = enc.decrypt(cipher, iv);
     return plain;
